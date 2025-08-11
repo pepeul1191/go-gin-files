@@ -18,15 +18,11 @@ func Setup() *gin.Engine {
 	r.GET("/", handlers.Home)
 
 	// Sign-in
-	r.POST("/api/v1/sign-in", handlers.SignIn)
+	r.POST("/api/v1/sign-in", middleware.SignInAuthenticate, handlers.SignIn)
 
 	// Grupo de rutas protegidas
-	fileGroup := r.Group("/api/v1/files")
-	fileGroup.Use(middleware.Authenticate)
-	{
-		fileGroup.POST("/:folder_name", handlers.UploadFile)
-		fileGroup.GET("/:folder_name/:file_name", handlers.DownloadFile)
-	}
+	r.POST("/:folder_name", middleware.CheckJWT(), handlers.UploadFile)
+	r.GET("/:folder_name/:file_name", middleware.CheckJWT(), handlers.DownloadFile)
 
 	// 404
 	r.NoRoute(func(c *gin.Context) {

@@ -21,9 +21,6 @@ func main() {
 
 	// Ahora puedes acceder a las variables de entorno
 	port := os.Getenv("PORT")
-	fmt.Println("1 +++++++++++++++++++++++++++++")
-	fmt.Println("Puerto:", port)
-	fmt.Println("2 +++++++++++++++++++++++++++++")
 
 	if port == "" {
 		port = "3000" // valor por defecto

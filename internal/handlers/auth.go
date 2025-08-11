@@ -2,7 +2,6 @@
 package handlers
 
 import (
-	"files-api/internal/middleware"
 	"fmt"
 	"net/http"
 
@@ -12,16 +11,6 @@ import (
 )
 
 func SignIn(c *gin.Context) {
-	incoming := c.GetHeader("X-Auth-Trigger")
-	if incoming != middleware.AuthHeader {
-		fmt.Println("Unauthorized access attempt.")
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error":   "Unauthorized",
-			"message": "Invalid or missing X-Auth-Trigger",
-		})
-		return
-	}
-
 	fmt.Println("Authentication successful. Generating JWT.")
 	token, err := utils.GenerateJWT()
 	if err != nil {
