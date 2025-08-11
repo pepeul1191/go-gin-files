@@ -23,6 +23,7 @@ func Setup() *gin.Engine {
 	// Grupo de rutas protegidas
 	r.POST("/api/v1/files/:folder_name", middleware.CheckJWT(), handlers.UploadFile)
 	r.GET("/api/v1/files/:folder_name/:file_name", middleware.CheckJWT(), handlers.DownloadFile)
+	r.POST("/api/v1/public/:folder_name", middleware.CheckJWT(), handlers.UploadFileToPublic)
 
 	// 404
 	r.NoRoute(func(c *gin.Context) {

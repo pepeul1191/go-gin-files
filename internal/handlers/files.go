@@ -14,6 +14,7 @@ import (
 )
 
 const UploadsDir = "uploads"
+const PublicDir = "public"
 
 func UploadFile(c *gin.Context) {
 	foldeName := c.Param("folder_name")
@@ -26,6 +27,48 @@ func UploadFile(c *gin.Context) {
 	defer file.Close()
 
 	dir := filepath.Join(UploadsDir, foldeName)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "No se pudo crear el directorio"})
+		return
+	}
+
+	ext := filepath.Ext(header.Filename)
+	randomName := fmt.Sprintf("%x%s", time.Now().UnixNano(), ext)
+	filePath := filepath.Join(dir, randomName)
+
+	out, err := os.Create(filePath)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al crear el archivo"})
+		return
+	}
+	defer out.Close()
+
+	_, err = io.Copy(out, file)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al guardar el archivo"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":            "success",
+		"filename":          randomName,
+		"path":              fmt.Sprintf("/uploads/%s/%s", foldeName, randomName),
+		"original_filename": header.Filename,
+		"size":              header.Size,
+	})
+}
+
+func UploadFileToPublic(c *gin.Context) {
+	foldeName := c.Param("folder_name")
+
+	file, header, err := c.Request.FormFile("file")
+	if file == nil || err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No se proporcionó ningún archivo"})
+		return
+	}
+	defer file.Close()
+
+	dir := filepath.Join(PublicDir, UploadsDir, foldeName)
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "No se pudo crear el directorio"})
 		return
