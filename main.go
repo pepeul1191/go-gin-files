@@ -33,7 +33,7 @@ func main() {
 	r := routes.Setup()
 
 	// Servir archivos estáticos
-	r.Static("/uploads", "uploads")
+	r.Static("/public", "public")
 
 	// Iniciar servidor
 	fmt.Printf("🚀 Servidor escuchando en http://localhost:%s\n", port)

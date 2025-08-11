@@ -1,0 +1,63 @@
+@baseUrl = http://localhost:4000
+@session = mysession=MTc0OTg1Nzc5MHxEWDhFQVFMX2dBQUJFQUVRQUFBb180QUFBUVp6ZEhKcGJtY01DQUFHYzNSaGRIVnpCbk4wY21sdVp3d0tBQWhoWTNScGRtRjBaUT09fMsOMrySaZXb7iVqWPzRGdBZzMNWzsX53YvrKgdxuykg
+@xauth = dXNlci1zdGlja3lfc2VjcmV0XzEyMzQ1Njc
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMjMsInJvbGUiOiJhZG1pbiIsImlzcyI6InlvdXItYXBwLmNvbSIsInN1YiI6InVzZXJAZXhhbXBsZS5jb20iLCJhdWQiOlsieW91ci1jbGllbnQtaWQiXSwiZXhwIjoxNzU0OTMwNDYyLCJpYXQiOjE3NTQ5MjY4NjJ9.CnPpy-NJtdwoYFU0po81SlE2C8LkESIgkCL-oMeWEKw
+
+### Crear token
+POST {{baseUrl}}/api/v1/sign-in
+Content-Type: application/json
+Cookie: {{session}}
+X-Auth-Trigger: {{xauth}}
+
+
+### Cargar pdf con JWT y foler_name
+POST {{baseUrl}}/api/v1/files/2
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Authorization: Bearer {{token}}
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="foler_name"
+
+mi-id-de-proyecto-123
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="documento.pdf"
+Content-Type: application/pdf
+
+< ./docs/mocks/archivo.pdf
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Cargar imagen con JWT y foler_name
+POST {{baseUrl}}/api/v1/files/2
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Authorization: Bearer {{token}}
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="foler_name"
+
+mi-id-de-proyecto-123
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="imagen.jpg"
+Content-Type: image/jpeg
+
+< ./docs/mocks/imagen.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Contenido de ruta protegida con token
+GET {{baseUrl}}/api/v1/files/2/185ac0e7198df182.pdf
+Content-Type: image/jpeg
+Authorization: Bearer {{token}}
+
+### Contenido de ruta protegida sin token 
+GET {{baseUrl}}/api/v1/files/2/6dd5d73a-95b4-4684-9566-6043ae55de84.jpg
+Content-Type: image/jpeg
+
+### Contenido de ruta protegida con token
+GET {{baseUrl}}/api/v1/files/2/02df7dfb-de5a-4f66-8e71-a88453c8c93f.pdf
+Content-Type: application/pdf
+Authorization: Bearer {{token}}
+
+### Contenido de ruta protegida sin token 
+GET {{baseUrl}}/api/v1/files/2/02df7dfb-de5a-4f66-8e71-a88453c8c93f.pdf
+Content-Type: application/pdf
+
+
