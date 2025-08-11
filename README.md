@@ -12,3 +12,5 @@ Archivo .env
     AUTH_HEADER=dXNlci1zdGlja3lfc2VjcmV0XzEyMzQ1Njc
     PORT=4000
     SECURE=false||true
+    MAX_FILE_SIZE_MB=5
+    ALLOWED_FILE_EXTENSIONS=pdf,png,docx

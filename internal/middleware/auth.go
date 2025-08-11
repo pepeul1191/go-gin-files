@@ -55,9 +55,7 @@ func CheckJWT() gin.HandlerFunc {
 			// Si hay error al parsear, asumimos false por seguridad
 			secureEnabled = false
 		}
-		fmt.Println("1 ------------------------------------")
-		fmt.Println("SECURE:", secureEnabled)
-		fmt.Println("2 ------------------------------------")
+
 		// Si SECURE no está activado, continuamos sin validar
 		if !secureEnabled {
 			c.Next()

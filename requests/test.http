@@ -20,10 +20,10 @@ Content-Disposition: form-data; name="foler_name"
 
 mi-id-de-proyecto-123
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="file"; filename="documento.pdf"
-Content-Type: application/pdf
+Content-Disposition: form-data; name="file"; filename="video.mp4"
+Content-Type: video/mp4
 
-< ./docs/mocks/archivo.pdf
+< ./docs/mocks/video.mp4
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
 ### Cargar imagen con JWT y foler_name

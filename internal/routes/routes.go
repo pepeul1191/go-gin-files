@@ -21,10 +21,9 @@ func Setup() *gin.Engine {
 	r.POST("/api/v1/sign-in", middleware.SignInAuthenticate(), handlers.SignIn)
 
 	// Grupo de rutas protegidas
-	r.POST("/api/v1/files/:folder_name", middleware.CheckJWT(), handlers.UploadFile)
+	r.POST("/api/v1/files/:folder_name", middleware.CheckJWT(), middleware.FileValidation(), handlers.UploadFile)
+	r.POST("/api/v1/public/:folder_name", middleware.CheckJWT(), middleware.FileValidation(), handlers.UploadFileToPublic)
 	r.GET("/api/v1/files/:folder_name/:file_name", middleware.CheckJWT(), handlers.DownloadFile)
-	r.POST("/api/v1/public/:folder_name", middleware.CheckJWT(), handlers.UploadFileToPublic)
-
 	// 404
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H{
