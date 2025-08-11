@@ -14,3 +14,7 @@ Archivo .env
     SECURE=false||true
     MAX_FILE_SIZE_MB=5
     ALLOWED_FILE_EXTENSIONS=pdf,png,docx
+    ALLOWED_ORIGINS=https://tudominio.com,http://localhost:3000
+    ALLOWED_METHODS=GET,POST,PUT,DELETE,OPTIONS
+    ALLOWED_HEADERS=Content-Type,Authorization,X-Requested-With
+    CORS_ENABLED=true

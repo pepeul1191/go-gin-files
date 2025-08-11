@@ -9,6 +9,7 @@ import (
 	"github.com/joho/godotenv"
 
 	"files-api/internal/config"
+	"files-api/internal/middleware"
 	"files-api/internal/routes"
 )
 
@@ -34,6 +35,8 @@ func main() {
 
 	// Servir archivos estáticos
 	r.Static("/public", "public")
+	// CORS
+	r.Use(middleware.CORSMiddleware())
 
 	// Iniciar servidor
 	fmt.Printf("🚀 Servidor escuchando en http://localhost:%s\n", port)
