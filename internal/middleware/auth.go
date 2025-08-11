@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -15,22 +17,53 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func SignInAuthenticate(c *gin.Context) {
-	incoming := c.GetHeader("X-Auth-Trigger")
-	if incoming != config.AuthHeader {
-		fmt.Println("Unauthorized access attempt.")
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error":   "Unauthorized",
-			"message": "Invalid or missing X-Auth-Trigger",
-		})
-		c.Abort()
-		return
+func SignInAuthenticate() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Verificar si SECURE está habilitado
+		secureEnabled, err := strconv.ParseBool(os.Getenv("SECURE"))
+		if err != nil {
+			// Si hay error al parsear, asumimos false por seguridad
+			secureEnabled = false
+		}
+
+		// Si SECURE no está activado, continuamos sin validar
+		if !secureEnabled {
+			c.Next()
+			return
+		}
+
+		// Validación original cuando SECURE=true
+		incoming := c.GetHeader("X-Auth-Trigger")
+		if incoming != config.AuthHeader {
+			fmt.Println("Unauthorized access attempt.")
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error":   "Unauthorized",
+				"message": "Invalid or missing X-Auth-Trigger",
+			})
+			c.Abort()
+			return
+		}
+		c.Next()
 	}
-	c.Next()
 }
 
 func CheckJWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// 0. Verificar si SECURE está habilitado
+		secureEnabled, err := strconv.ParseBool(os.Getenv("SECURE"))
+		if err != nil {
+			// Si hay error al parsear, asumimos false por seguridad
+			secureEnabled = false
+		}
+		fmt.Println("1 ------------------------------------")
+		fmt.Println("SECURE:", secureEnabled)
+		fmt.Println("2 ------------------------------------")
+		// Si SECURE no está activado, continuamos sin validar
+		if !secureEnabled {
+			c.Next()
+			return
+		}
+
 		// 1. Extraer el token del encabezado Authorization
 		tokenString := extractToken(c)
 		if tokenString == "" {

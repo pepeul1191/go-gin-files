@@ -18,7 +18,7 @@ func Setup() *gin.Engine {
 	r.GET("/", handlers.Home)
 
 	// Sign-in
-	r.POST("/api/v1/sign-in", middleware.SignInAuthenticate, handlers.SignIn)
+	r.POST("/api/v1/sign-in", middleware.SignInAuthenticate(), handlers.SignIn)
 
 	// Grupo de rutas protegidas
 	r.POST("/api/v1/files/:folder_name", middleware.CheckJWT(), handlers.UploadFile)
