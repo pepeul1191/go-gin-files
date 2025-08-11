@@ -16,7 +16,7 @@ import (
 const UploadsDir = "uploads"
 
 func UploadFile(c *gin.Context) {
-	issueID := c.Param("issue_id")
+	foldeName := c.Param("folder_name")
 
 	file, header, err := c.Request.FormFile("file")
 	if file == nil || err != nil {
@@ -25,7 +25,7 @@ func UploadFile(c *gin.Context) {
 	}
 	defer file.Close()
 
-	dir := filepath.Join(UploadsDir, issueID)
+	dir := filepath.Join(UploadsDir, foldeName)
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "No se pudo crear el directorio"})
 		return
@@ -51,17 +51,17 @@ func UploadFile(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"status":            "success",
 		"filename":          randomName,
-		"path":              fmt.Sprintf("/uploads/%s/%s", issueID, randomName),
+		"path":              fmt.Sprintf("/uploads/%s/%s", foldeName, randomName),
 		"original_filename": header.Filename,
 		"size":              header.Size,
 	})
 }
 
 func DownloadFile(c *gin.Context) {
-	issueID := c.Param("issue_id")
+	foldeName := c.Param("folder_name")
 	fileName := c.Param("file_name")
 
-	filePath := filepath.Join(UploadsDir, issueID, fileName)
+	filePath := filepath.Join(UploadsDir, foldeName, fileName)
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "File not found or not accessible"})
 		return

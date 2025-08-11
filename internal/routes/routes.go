@@ -24,8 +24,8 @@ func Setup() *gin.Engine {
 	fileGroup := r.Group("/api/v1/files")
 	fileGroup.Use(middleware.Authenticate)
 	{
-		fileGroup.POST("/:issue_id", handlers.UploadFile)
-		fileGroup.GET("/:issue_id/:file_name", handlers.DownloadFile)
+		fileGroup.POST("/:folder_name", handlers.UploadFile)
+		fileGroup.GET("/:folder_name/:file_name", handlers.DownloadFile)
 	}
 
 	// 404
