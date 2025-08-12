@@ -8,9 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Setup() *gin.Engine {
-	r := gin.Default()
-
+func Setup(r *gin.Engine) *gin.Engine {
 	// Logging
 	r.Use(gin.Logger())
 

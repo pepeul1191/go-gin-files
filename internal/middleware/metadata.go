@@ -20,14 +20,14 @@ func FileValidation() gin.HandlerFunc {
 		// 2. Validar que las configuraciones existen
 		if maxSizeMB == 0 {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-				"error": "File size limit not configured",
+				"error": "Middleware Error, File size limit not configured", "message": "No se ha configurado el tamaño máximo del archivo.",
 			})
 			return
 		}
 
 		if len(allowedExtensions) == 0 {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-				"error": "Allowed extensions not configured",
+				"error": "Allowed extensions not configured", "message": "No se ha configurado las extensiones permitidas.",
 			})
 			return
 		}
@@ -36,7 +36,7 @@ func FileValidation() gin.HandlerFunc {
 		file, header, err := c.Request.FormFile("file")
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-				"error": "File is required",
+				"error": "File is required", "message": "No se ha enviado archivo adjunto",
 			})
 			return
 		}
@@ -46,7 +46,7 @@ func FileValidation() gin.HandlerFunc {
 		maxSizeBytes := int64(maxSizeMB) << 20 // Convertir MB a bytes
 		if header.Size > maxSizeBytes {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-				"error": fmt.Sprintf("File too large. Max size is %dMB", maxSizeMB),
+				"error": fmt.Sprintf("File too large. Max size is %dMB", maxSizeMB), "message": fmt.Sprintf("Archivo muy grande. Máximo permitido %dMB", maxSizeMB),
 			})
 			return
 		}
@@ -63,7 +63,7 @@ func FileValidation() gin.HandlerFunc {
 
 		if !validExtension {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-				"error": fmt.Sprintf("Invalid file extension. Allowed: %s", strings.Join(allowedExtensions, ", ")),
+				"message": fmt.Sprintf("Sólo se permiten las siguientes extensiones %s", strings.Join(allowedExtensions, ", ")), "error": fmt.Sprintf("Invalid file extension. Allowed: %s", strings.Join(allowedExtensions, ", ")),
 			})
 			return
 		}

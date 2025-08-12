@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 
 	"files-api/internal/config"
@@ -30,13 +31,17 @@ func main() {
 	// Asegurarse de que config cargue las variables (si usas config.Init())
 	config.Init() // Opcional: si quieres inicializar config en un paquete
 
-	// Configurar rutas
-	r := routes.Setup()
+	// Crear router de Gin
+	r := gin.Default()
 
-	// Servir archivos estáticos
-	r.Static("/public", "public")
-	// CORS
+	// 1. PRIMERO registrar el middleware CORS
 	r.Use(middleware.CORSMiddleware())
+
+	// 2. LUEGO configurar rutas
+	routes.Setup(r) // Asegúrate que Setup acepte *gin.Engine como parámetro
+
+	// 3. Configurar archivos estáticos
+	r.Static("/public", "./public")
 
 	// Iniciar servidor
 	fmt.Printf("🚀 Servidor escuchando en http://localhost:%s\n", port)

@@ -21,14 +21,16 @@ func UploadFile(c *gin.Context) {
 
 	file, header, err := c.Request.FormFile("file")
 	if file == nil || err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "No se proporcionó ningún archivo"})
+		fmt.Println(err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": "No se proporcionó ningún archivo"})
 		return
 	}
 	defer file.Close()
 
 	dir := filepath.Join(UploadsDir, foldeName)
 	if err := os.MkdirAll(dir, 0755); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "No se pudo crear el directorio"})
+		fmt.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "No se pudo crear el directorio"})
 		return
 	}
 
@@ -38,14 +40,16 @@ func UploadFile(c *gin.Context) {
 
 	out, err := os.Create(filePath)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al crear el archivo"})
+		fmt.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "Error al crear el archivo"})
 		return
 	}
 	defer out.Close()
 
 	_, err = io.Copy(out, file)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al guardar el archivo"})
+		fmt.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "Error al guardar el archivo"})
 		return
 	}
 
@@ -63,14 +67,16 @@ func UploadFileToPublic(c *gin.Context) {
 
 	file, header, err := c.Request.FormFile("file")
 	if file == nil || err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "No se proporcionó ningún archivo"})
+		fmt.Println(err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": "No se proporcionó ningún archivo"})
 		return
 	}
 	defer file.Close()
 
 	dir := filepath.Join(PublicDir, UploadsDir, foldeName)
 	if err := os.MkdirAll(dir, 0755); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "No se pudo crear el directorio"})
+		fmt.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "No se pudo crear el directorio"})
 		return
 	}
 
@@ -80,14 +86,16 @@ func UploadFileToPublic(c *gin.Context) {
 
 	out, err := os.Create(filePath)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al crear el archivo"})
+		fmt.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "Error al crear el archivo"})
 		return
 	}
 	defer out.Close()
 
 	_, err = io.Copy(out, file)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al guardar el archivo"})
+		fmt.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "Error al guardar el archivo"})
 		return
 	}
 
@@ -106,7 +114,8 @@ func DownloadFile(c *gin.Context) {
 
 	filePath := filepath.Join(UploadsDir, foldeName, fileName)
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		c.JSON(http.StatusNotFound, gin.H{"error": "File not found or not accessible"})
+		fmt.Println(err.Error())
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error(), "message": "File not found or not accessible"})
 		return
 	}
 

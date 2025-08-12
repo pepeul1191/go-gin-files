@@ -22,7 +22,6 @@ func CORSMiddleware() gin.HandlerFunc {
 		allowedOrigins := strings.Split(os.Getenv("ALLOWED_ORIGINS"), ",")
 		allowedMethods := os.Getenv("ALLOWED_METHODS")
 		allowedHeaders := os.Getenv("ALLOWED_HEADERS")
-
 		// Verificar si el origen está permitido
 		requestOrigin := c.Request.Header.Get("Origin")
 		originAllowed := false
