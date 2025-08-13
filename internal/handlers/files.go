@@ -53,12 +53,20 @@ func UploadFile(c *gin.Context) {
 		return
 	}
 
+	// Obtener MIME type
+	mimeType := mime.TypeByExtension(ext)
+	if mimeType == "" {
+		// Si no se reconoce por extensión, intentar detectarlo
+		mimeType = http.DetectContentType([]byte(ext))
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"status":            "success",
 		"filename":          randomName,
 		"path":              fmt.Sprintf("/uploads/%s/%s", foldeName, randomName),
 		"original_filename": header.Filename,
 		"size":              header.Size,
+		"mime_type":         mimeType,
 	})
 }
 
@@ -99,12 +107,20 @@ func UploadFileToPublic(c *gin.Context) {
 		return
 	}
 
+	// Obtener MIME type
+	mimeType := mime.TypeByExtension(ext)
+	if mimeType == "" {
+		// Si no se reconoce por extensión, intentar detectarlo
+		mimeType = http.DetectContentType([]byte(ext))
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"status":            "success",
 		"filename":          randomName,
 		"path":              fmt.Sprintf("/uploads/%s/%s", foldeName, randomName),
 		"original_filename": header.Filename,
 		"size":              header.Size,
+		"mime_type":         mimeType,
 	})
 }
 
