@@ -9,9 +9,6 @@ import (
 )
 
 func Setup(r *gin.Engine) *gin.Engine {
-	// Logging
-	r.Use(gin.Logger())
-
 	// Ruta principal
 	r.GET("/", handlers.Home)
 

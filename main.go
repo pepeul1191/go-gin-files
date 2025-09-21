@@ -35,8 +35,9 @@ func main() {
 	r := gin.Default()
 
 	// 1. PRIMERO registrar el middleware CORS
+	r.Use(middleware.DetailedRecovery())
 	r.Use(middleware.CORSMiddleware())
-
+	r.Use(gin.Logger())
 	// 2. LUEGO configurar rutas
 	routes.Setup(r) // Asegúrate que Setup acepte *gin.Engine como parámetro
 

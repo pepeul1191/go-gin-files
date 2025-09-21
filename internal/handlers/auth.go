@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"files-api/internal/config"
 	"files-api/internal/utils"
 
 	"github.com/gin-gonic/gin"
@@ -15,9 +16,21 @@ func SignIn(c *gin.Context) {
 	token, err := utils.GenerateJWT()
 	if err != nil {
 		fmt.Println("Failed to encode JWT:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		// Return a standardized error response
+		c.JSON(http.StatusInternalServerError, config.SignResponse{
+			Success: false,
+			Message: "Failed to generate token",
+			Error:   err.Error(),
+		})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"token": token})
+	// Return a standardized success response
+	c.JSON(http.StatusOK, config.SignResponse{
+		Success: true,
+		Message: "Login successful",
+		Data: config.JWTAccess{
+			Token: token,
+		},
+	})
 }

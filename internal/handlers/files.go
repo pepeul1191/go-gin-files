@@ -1,7 +1,7 @@
-// internal/handlers/files.go
 package handlers
 
 import (
+	"files-api/internal/config"
 	"fmt"
 	"io"
 	"mime"
@@ -21,16 +21,22 @@ func UploadFile(c *gin.Context) {
 
 	file, header, err := c.Request.FormFile("file")
 	if file == nil || err != nil {
-		fmt.Println(err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": "No se proporcionó ningún archivo"})
+		c.JSON(http.StatusBadRequest, config.SignResponse{
+			Success: false,
+			Message: "No se proporcionó ningún archivo",
+			Error:   err.Error(),
+		})
 		return
 	}
 	defer file.Close()
 
 	dir := filepath.Join(UploadsDir, foldeName)
 	if err := os.MkdirAll(dir, 0755); err != nil {
-		fmt.Println(err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "No se pudo crear el directorio"})
+		c.JSON(http.StatusInternalServerError, config.SignResponse{
+			Success: false,
+			Message: "No se pudo crear el directorio",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -40,33 +46,41 @@ func UploadFile(c *gin.Context) {
 
 	out, err := os.Create(filePath)
 	if err != nil {
-		fmt.Println(err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "Error al crear el archivo"})
+		c.JSON(http.StatusInternalServerError, config.SignResponse{
+			Success: false,
+			Message: "Error al crear el archivo",
+			Error:   err.Error(),
+		})
 		return
 	}
 	defer out.Close()
 
 	_, err = io.Copy(out, file)
 	if err != nil {
-		fmt.Println(err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "Error al guardar el archivo"})
+		c.JSON(http.StatusInternalServerError, config.SignResponse{
+			Success: false,
+			Message: "Error al guardar el archivo",
+			Error:   err.Error(),
+		})
 		return
 	}
 
-	// Obtener MIME type
 	mimeType := mime.TypeByExtension(ext)
 	if mimeType == "" {
-		// Si no se reconoce por extensión, intentar detectarlo
 		mimeType = http.DetectContentType([]byte(ext))
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status":            "success",
-		"filename":          randomName,
-		"path":              fmt.Sprintf("/uploads/%s/%s", foldeName, randomName),
-		"original_filename": header.Filename,
-		"size":              header.Size,
-		"mime_type":         mimeType,
+	// Success response
+	c.JSON(http.StatusOK, config.SignResponse{
+		Success: true,
+		Message: "Archivo subido correctamente",
+		Data: config.FileData{
+			Filename:         randomName,
+			Path:             fmt.Sprintf("/uploads/%s/%s", foldeName, randomName),
+			OriginalFilename: header.Filename,
+			Size:             header.Size,
+			MimeType:         mimeType,
+		},
 	})
 }
 
@@ -75,16 +89,22 @@ func UploadFileToPublic(c *gin.Context) {
 
 	file, header, err := c.Request.FormFile("file")
 	if file == nil || err != nil {
-		fmt.Println(err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": "No se proporcionó ningún archivo"})
+		c.JSON(http.StatusBadRequest, config.SignResponse{
+			Success: false,
+			Message: "No se proporcionó ningún archivo",
+			Error:   err.Error(),
+		})
 		return
 	}
 	defer file.Close()
 
 	dir := filepath.Join(PublicDir, UploadsDir, foldeName)
 	if err := os.MkdirAll(dir, 0755); err != nil {
-		fmt.Println(err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "No se pudo crear el directorio"})
+		c.JSON(http.StatusInternalServerError, config.SignResponse{
+			Success: false,
+			Message: "No se pudo crear el directorio",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -94,33 +114,41 @@ func UploadFileToPublic(c *gin.Context) {
 
 	out, err := os.Create(filePath)
 	if err != nil {
-		fmt.Println(err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "Error al crear el archivo"})
+		c.JSON(http.StatusInternalServerError, config.SignResponse{
+			Success: false,
+			Message: "Error al crear el archivo",
+			Error:   err.Error(),
+		})
 		return
 	}
 	defer out.Close()
 
 	_, err = io.Copy(out, file)
 	if err != nil {
-		fmt.Println(err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "Error al guardar el archivo"})
+		c.JSON(http.StatusInternalServerError, config.SignResponse{
+			Success: false,
+			Message: "Error al guardar el archivo",
+			Error:   err.Error(),
+		})
 		return
 	}
 
-	// Obtener MIME type
 	mimeType := mime.TypeByExtension(ext)
 	if mimeType == "" {
-		// Si no se reconoce por extensión, intentar detectarlo
 		mimeType = http.DetectContentType([]byte(ext))
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status":            "success",
-		"filename":          randomName,
-		"path":              fmt.Sprintf("/uploads/%s/%s", foldeName, randomName),
-		"original_filename": header.Filename,
-		"size":              header.Size,
-		"mime_type":         mimeType,
+	// Success response
+	c.JSON(http.StatusOK, config.SignResponse{
+		Success: true,
+		Message: "Archivo subido correctamente al directorio público",
+		Data: config.FileData{
+			Filename:         randomName,
+			Path:             fmt.Sprintf("/uploads/%s/%s", foldeName, randomName),
+			OriginalFilename: header.Filename,
+			Size:             header.Size,
+			MimeType:         mimeType,
+		},
 	})
 }
 
@@ -130,8 +158,11 @@ func DownloadFile(c *gin.Context) {
 
 	filePath := filepath.Join(UploadsDir, foldeName, fileName)
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		fmt.Println(err.Error())
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error(), "message": "File not found or not accessible"})
+		c.JSON(http.StatusNotFound, config.SignResponse{
+			Success: false,
+			Message: "Archivo no encontrado",
+			Error:   err.Error(),
+		})
 		return
 	}
 

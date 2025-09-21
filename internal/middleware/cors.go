@@ -17,7 +17,6 @@ func CORSMiddleware() gin.HandlerFunc {
 			c.Next()
 			return
 		}
-
 		// Obtener hosts permitidos desde .env
 		allowedOrigins := strings.Split(os.Getenv("ALLOWED_ORIGINS"), ",")
 		allowedMethods := os.Getenv("ALLOWED_METHODS")
